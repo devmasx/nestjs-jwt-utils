@@ -4,12 +4,17 @@
   "description": "",
   "author": "",
   "private": false,
+  "files": [
+    "index.js",
+    "index.ts",
+    "index.d.ts"
+  ],
   "scripts": {
     "start:dev": "nest start --watch",
     "start:debug": "nest start --debug --watch",
-    "prepublish": "npx tsc",
+    "prepublish": "npm run build",
     "test": "jest --config ./jest-e2e.json",
-    "build": "npx tsc"
+    "build": "npx tsc index.ts --declaration"
   },
   "devDependencies": {
     "@nestjs/common": "^9.2.1",
