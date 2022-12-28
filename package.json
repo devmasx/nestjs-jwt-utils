@@ -1,0 +1,18 @@
+{
+  "name": "nestjs-jwt-utils",
+  "version": "0.1.0",
+  "description": "",
+  "author": "",
+  "private": false,
+  "scripts": {
+    "prepublish": "npx tsc",
+    "build": "npx tsc"
+  },
+  "devDependencies": {
+    "@nestjs/common": "^9.2.1",
+    "typescript": "^4.9.4"
+  },
+  "dependencies": {
+    "jwt-decode": "^3.1.2"
+  }
+}
