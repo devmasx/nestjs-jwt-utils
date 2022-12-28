@@ -15,7 +15,9 @@ export const JwtDecode = createParamDecorator(
   (options: IJwtDecodeOptions, ctx: ExecutionContext) => {
     const request = ctx.switchToHttp().getRequest();
     const extractToken = new ExtractToken(request.headers, options);
-    return jwtDecode(extractToken.token());
+    const token = extractToken.token();
+    if (!token) return null;
+    return jwtDecode(token);
   },
 );
 
