@@ -28,6 +28,18 @@ describe('AppController (e2e)', () => {
     });
   });
 
+  it('With wrong format JWT', async () => {
+    const JWT = `NOT_VALID`;
+    const response = await request(app.getHttpServer())
+      .get('/')
+      .set('Authorization', `Bearer ${JWT}`);
+    expect(response.statusCode).toEqual(400);
+    expect(response.body).toEqual({
+      message: 'Bad jwt token format',
+      statusCode: 400,
+    });
+  });
+
   it('Without authorization header', async () => {
     const response = await request(app.getHttpServer()).get('/');
     expect(response.statusCode).toEqual(200);

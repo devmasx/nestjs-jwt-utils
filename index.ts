@@ -2,6 +2,8 @@ import {
   CanActivate,
   createParamDecorator,
   ExecutionContext,
+  HttpException,
+  HttpStatus,
   Injectable,
 } from '@nestjs/common';
 import jwtDecode from 'jwt-decode';
@@ -17,7 +19,11 @@ export const JwtDecode = createParamDecorator(
     const extractToken = new ExtractToken(request.headers, options);
     const token = extractToken.token();
     if (!token) return null;
-    return jwtDecode(token);
+    try {
+      return jwtDecode(token);
+    } catch (e) {
+      throw new HttpException('Bad jwt token format', HttpStatus.BAD_REQUEST);
+    }
   },
 );
 
