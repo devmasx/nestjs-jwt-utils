@@ -15,10 +15,22 @@ describe('AppController (e2e)', () => {
     await app.init();
   });
 
-  it('/ (GET)', () => {
-    return request(app.getHttpServer())
+  it('With valid JWT', async () => {
+    const JWT = `eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOjEsImlhdCI6MTY3MjE3NjYxNywiZXhwIjoxNjcyMTc2Njc3fQ._CNliq2v7CsOu_pQnD89XhECnXvFCVAm2Wfm5vJuOKA`;
+    const response = await request(app.getHttpServer())
       .get('/')
-      .expect(200)
-      .expect('Hello World!');
+      .set('Authorization', `Bearer ${JWT}`);
+    expect(response.statusCode).toEqual(200);
+    expect(response.body.jwtData).toEqual({
+      exp: 1672176677,
+      iat: 1672176617,
+      sub: 1,
+    });
+  });
+
+  it('Without authorization header', async () => {
+    const response = await request(app.getHttpServer()).get('/');
+    expect(response.statusCode).toEqual(200);
+    expect(response.body.jwtData).toEqual(null);
   });
 });

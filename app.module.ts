@@ -4,8 +4,11 @@ import { JwtDecode } from './index';
 @Controller()
 export class AppController {
   @Get()
-  getHello(@JwtDecode() jwtData): string {
-    return 'Hello World!';
+  getHello(@JwtDecode() jwtData) {
+    return {
+      success: true,
+      jwtData,
+    };
   }
 }
 
