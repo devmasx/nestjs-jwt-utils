@@ -1,18 +1,42 @@
-import { createParamDecorator, ExecutionContext } from '@nestjs/common';
+import {
+  CanActivate,
+  createParamDecorator,
+  ExecutionContext,
+  Injectable,
+} from '@nestjs/common';
 import jwtDecode from 'jwt-decode';
 
-interface IJwtDataOptions {
+interface IJwtDecodeOptions {
   authorizationHeader?: string;
   authScheme?: string;
 }
 
 export const JwtDecode = createParamDecorator(
-  (options: IJwtDataOptions, ctx: ExecutionContext) => {
+  (options: IJwtDecodeOptions, ctx: ExecutionContext) => {
     const request = ctx.switchToHttp().getRequest();
     const extractToken = new ExtractToken(request.headers, options);
     return jwtDecode(extractToken.token());
   },
 );
+
+export class JwtGuard implements CanActivate {
+  constructor(
+    private callback: (jwtDecoded: any) => boolean,
+    private decodeOptions: IJwtDecodeOptions,
+  ) {}
+
+  canActivate(context: ExecutionContext): boolean {
+    const request = context.switchToHttp().getRequest();
+    const extractToken = new ExtractToken(request.headers, this.decodeOptions);
+    return this.callback(jwtDecode(extractToken.token()));
+  }
+}
+
+export class JwtScopesGuard extends JwtGuard {
+  constructor(scopes: string[], decodeOptions: IJwtDecodeOptions) {
+    super((jwtDecode) => scopes.includes(jwtDecode['scopes']), decodeOptions);
+  }
+}
 
 export class ExtractToken {
   authHeader: string;
@@ -24,7 +48,7 @@ export class ExtractToken {
     {
       authorizationHeader = 'authorization',
       authScheme = 'Bearer',
-    }: IJwtDataOptions = {},
+    }: IJwtDecodeOptions = {},
   ) {
     this.authHeader = this.headers[authorizationHeader];
     this.authScheme = authScheme;
