@@ -30,19 +30,22 @@ export const JwtDecode = createParamDecorator(
 export class JwtGuard implements CanActivate {
   constructor(
     private callback: (jwtDecoded: any) => boolean,
-    private decodeOptions: IJwtDecodeOptions,
+    private decodeOptions?: IJwtDecodeOptions,
   ) {}
 
   canActivate(context: ExecutionContext): boolean {
     const request = context.switchToHttp().getRequest();
     const extractToken = new ExtractToken(request.headers, this.decodeOptions);
+    console.log(jwtDecode(extractToken.token()));
     return this.callback(jwtDecode(extractToken.token()));
   }
 }
 
 export class JwtScopesGuard extends JwtGuard {
-  constructor(scopes: string[], decodeOptions: IJwtDecodeOptions) {
-    super((jwtDecode) => scopes.includes(jwtDecode['scopes']), decodeOptions);
+  constructor(scopes: string[], decodeOptions?: IJwtDecodeOptions) {
+    const checkIncludeScope = (jwtDecode) =>
+      scopes.some((scope) => jwtDecode['scopes'].includes(scope));
+    super(checkIncludeScope, decodeOptions);
   }
 }
 
