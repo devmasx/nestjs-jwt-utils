@@ -51,7 +51,7 @@ describe('AppController (e2e)', () => {
     });
   });
 
-  describe.only('JwtGuard nestjs Guard', () => {
+  describe('JwtGuard nestjs Guard', () => {
     [
       ['/admin', { role: 'user' }, 403],
       ['/admin', { role: 'admin' }, 200],

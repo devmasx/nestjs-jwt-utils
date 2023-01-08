@@ -15,6 +15,51 @@ export class AppController {
 }
 ```
 
+## Guard
+```ts
+import { JwtDecode, JwtGuard, JwtScopesGuard } from "nestjs-jwt-utils"
+
+@Controller()
+export class AppController {
+  @UseGuards(new JwtGuard(({ role }) => role == 'admin'))
+  @Get('/profile')
+  profile(@JwtDecode() jwtData) {
+    return jwtData;
+  }
+
+  @UseGuards(new JwtScopesGuard(['users:admin']))
+  @Get('/users/:id')
+  profile() {
+    return {
+      success: true,
+    };
+  }
+}
+```
+
+## Custom Guard
+```ts
+import { JwtDecode } from "nestjs-jwt-utils"
+import jsonwebtoken from 'jsonwebtoken';
+
+class JwtVerifyGuard extends JwtGuard {
+  constructor() {
+    super((_decoded, jwt) => {
+      return !!jsonwebtoken.verify(jwt, 'shhhhh');
+    });
+  }
+}
+
+@Controller()
+export class AppController {
+  @UseGuards(JwtVerifyGuard)
+  @Get('/profile')
+  profile() {
+    return {};
+  }
+}
+```
+
 Decode JWT from authorization header
 
 ```

@@ -4,7 +4,6 @@ import {
   ExecutionContext,
   HttpException,
   HttpStatus,
-  Injectable,
 } from '@nestjs/common';
 import jwtDecode from 'jwt-decode';
 
@@ -29,15 +28,15 @@ export const JwtDecode = createParamDecorator(
 
 export class JwtGuard implements CanActivate {
   constructor(
-    private callback: (jwtDecoded: any) => boolean,
+    private callback: (jwtDecoded: any, jwt: string) => boolean,
     private decodeOptions?: IJwtDecodeOptions,
   ) {}
 
   canActivate(context: ExecutionContext): boolean {
     const request = context.switchToHttp().getRequest();
     const extractToken = new ExtractToken(request.headers, this.decodeOptions);
-    console.log(jwtDecode(extractToken.token()));
-    return this.callback(jwtDecode(extractToken.token()));
+    const token = extractToken.token();
+    return this.callback(jwtDecode(token), token);
   }
 }
 
