@@ -5,7 +5,11 @@ import jsonwebtoken from 'jsonwebtoken';
 class JwtVerifyGuard extends JwtGuard {
   constructor() {
     super((_decoded, jwt) => {
-      return !!jsonwebtoken.verify(jwt, 'shhhhh');
+      try {
+        jsonwebtoken.verify(jwt, 'shhhhh');
+      } catch {
+        return false;
+      }
     });
   }
 }
@@ -44,13 +48,15 @@ export class AppController {
     };
   }
 
-  // @Get('/decode')
-  // decode(@JwtDecode({ TokenExtractor: MyTokenExtractor }) jwtData) {
-  //   return {
-  //     success: true,
-  //     jwtData,
-  //   };
-  // }
+  @Get('/decode')
+  decode(
+    @JwtDecode({ authorizationHeader: 'x-custom-authorization' }) jwtData,
+  ) {
+    return {
+      success: true,
+      jwtData,
+    };
+  }
 }
 
 @Module({

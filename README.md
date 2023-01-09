@@ -45,7 +45,11 @@ import jsonwebtoken from 'jsonwebtoken';
 class JwtVerifyGuard extends JwtGuard {
   constructor() {
     super((_decoded, jwt) => {
-      return !!jsonwebtoken.verify(jwt, 'shhhhh');
+      try {
+        jsonwebtoken.verify(jwt, 'shhhhh');
+      } catch {
+        return false;
+      }
     });
   }
 }

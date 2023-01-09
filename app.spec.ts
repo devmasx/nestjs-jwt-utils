@@ -57,14 +57,23 @@ describe('AppController (e2e)', () => {
       ['/admin', { role: 'admin' }, 200],
       ['/users/1', { scopes: 'users:read' }, 403],
       ['/users/1', { scopes: 'users:read users:admin' }, 200],
-    ].forEach(([endpoint, data, expectedStatus]: any) => {
-      it('Guard', async () => {
-        const jwt = jwtService.sign(data);
-        const response = await request(app.getHttpServer())
-          .get(endpoint)
-          .set('Authorization', `Bearer ${jwt}`);
-        expect(response.statusCode).toEqual(expectedStatus);
-      });
-    });
+      [
+        '/decode',
+        { scopes: 'users:read users:admin' },
+        200,
+        'x-custom-authorization',
+      ],
+      ['/verify', { scopes: 'users:read' }, 403],
+    ].forEach(
+      ([endpoint, data, expectedStatus, header = 'Authorization']: any) => {
+        it(`Guard ${endpoint}`, async () => {
+          const jwt = jwtService.sign(data);
+          const response = await request(app.getHttpServer())
+            .get(endpoint)
+            .set(header, `Bearer ${jwt}`);
+          expect(response.statusCode).toEqual(expectedStatus);
+        });
+      },
+    );
   });
 });
